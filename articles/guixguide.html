@@ -262,13 +262,72 @@
 ))
           </code></pre>
           <br>
+          <p>
+            Now comes the juicy part: <b>services</b>. We will set up a few services, some of which I consider necessary, and some which are purely optional (such as the <a>hurd-vm-service-type</a>, or the <a>nix-service-type</a>). What's important to know is that the <a>(modify-services)</a> block/option not only <i>modifies</i> a gives set of services, it also outputs the entire modified service definition <b>including all unmodified services</b> back to the system/configuration. This means that we can take a look at the <a href="https://codeberg.org/guix/guix/src/branch/master/gnu/services/desktop.scm">codeberg:guix/guix-gnu/services/desktop.scm</a> services definition to see which services are included in our <a>%desktop-services</a> block, the one we are modifying, and do not need to include any service that is already included in the <a>%desktop-services</a> again. If we want to remove a service which is present in the <a>%desktop-services</a> module, we can simple add <a>(delete [service]-service-type)</a>. Below I defined a few services:
+          </p>
+          <pre><code class="language-scheme">
+; ... (use-modules), (use-service-modules), and (use-package-modules) above here.
+(define %guix-os (operating-system
+; ... rest of the (operating-system) definition from before above here.
+ (services
+  (append
+   (list
+    ; Hurd-VM Service, this is optional and can be removed if you want to.
+    (service hurd-vm-service-type
+	     (hurd-vm-configuration
+	      (memory-size 2048)
+	      (secret-directory "/etc/guix/hurd-secrets")))
+    (service gnome-desktop-service-type)
+    (service nix-service-type) ; This Nix Service can also be removed if you don't need it.
+    (simple-service 'doas-config etc-service-type
+                    (list
+                     `("doas.conf" ,(plain-file "doas.conf"
+"permit nopass keepenv root
+permit persist keepenv setenv :wheel"))))
+    (set-xorg-configuration
+     (xorg-configuration
+      (keyboard-layout keyboard-layout)
+      ; These 2 lines below are used to set up Nvidia Drivers under Xorg.
+      (modules (cons nvidia-driver %default-xorg-modules))
+      (drivers '("nvidia")))))
 
-
-
-
-
-
+   (modify-services %desktop-services
+                    (gdm-service-type config =>
+                                      (gdm-configuration
+                                       (inherit config)
+                                       (wayland? #t)))
+                    (guix-service-type config =>
+                                       (guix-configuration
+                                        (inherit config)
+                                        (substitute-urls
+                                         (append (list "https://ci.guix.gnu.org"
+                                               "https://berlin.guix.gnu.org"
+                                               "https://bordeaux.guix.gnu.org"
+                                               "https://substitutes.nonguix.org"
+                                               "https://hydra-guix-129.guix.gnu.org"
+                                               "https://substitutes.guix.gofranz.com")
+                                                 %default-substitute-urls))
+                                        (authorized-keys
+                                         (append (list (local-file "/etc/guix/files/keys/nonguix.pub"))
+                                                 %default-authorized-guix-keys))
+                                        ))
+                    (mingetty-service-type config =>
+                                           (mingetty-configuration
+                                            (inherit config)
+                                            (auto-login "puppy")))
+                    )
+   ))
+          </code></pre>
           <br>
+          <p>
+            We're almost done now. The last missing piece, is the <i>nonguix transformation</i> used to enable proprietary Nvidia Drivers. For that, we simply add the following code-block right at the <b>end</b> of our <a>config.scm</a>:
+          </p>
+          <pre><code class="language-scheme">
+((compose (nonguix-transformation-nvidia))
+ %guix-os)
+          </code></pre>
+          <br>
+
           <p>
             And this is it! This is what our complete <a>config.scm</a> now looks like. This configuration is fully functionaly, declares and configures everything we need to get a working system up and running, and more!
           </p>

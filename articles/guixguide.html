@@ -126,6 +126,7 @@
             </ul>
 
             <br>
+            <h3>User Account</h3>
           <p>
             Now we can add our user account, this is pretty straight-forward: you pick a username, add your newly created user to a few groups, and optionally set the users default shell, here - let me show you:
           </p>
@@ -151,6 +152,7 @@
 ))
           </code></pre>
           <br>
+          <h3>Bootloader and Filesystem</h3>
           <p>
             Now we need to configure the bootloader and the file-systems. In this example I will use an <a>(U)EFI</a> compatible layout. Configuration code snippets for <a>Legacy/BIOS</a> systems are attached at the end of this Article. Either way, let's begin:
           </p>
@@ -191,6 +193,7 @@
 ))
           </code></pre>
           <br>
+          <h3>Packages</h3>
           <p>
             Now is a good time to talk about packages. On GNU Guix, packages are provided by channels. You can view your currently available and configured channels with the command <a>guix describe</a>. This article assumes you have set up the <a>nonguix</a>, <a>emacs</a>, <a>jonabron</a>, and of course the default/base <a>guix</a> channel. <i>How</i> you do that, will be explained later. For now, let's get to installing some packages:
           </p>
@@ -262,8 +265,9 @@
 ))
           </code></pre>
           <br>
+          <h3>Services</h3>
           <p>
-            Now comes the juicy part: <b>services</b>. We will set up a few services, some of which I consider necessary, and some which are purely optional (such as the <a>hurd-vm-service-type</a>, or the <a>nix-service-type</a>). What's important to know is that the <a>(modify-services)</a> block/option not only <i>modifies</i> a gives set of services, it also outputs the entire modified service definition <b>including all unmodified services</b> back to the system/configuration. This means that we can take a look at the <a href="https://codeberg.org/guix/guix/src/branch/master/gnu/services/desktop.scm">codeberg:guix/guix-gnu/services/desktop.scm</a> services definition to see which services are included in our <a>%desktop-services</a> block, the one we are modifying, and do not need to include any service that is already included in the <a>%desktop-services</a> again. If we want to remove a service which is present in the <a>%desktop-services</a> module, we can simple add <a>(delete [service]-service-type)</a>. Below I defined a few services:
+            Now comes the juicy part: <b>services</b>. We will set up a few services, some of which I consider necessary, and some which are purely optional (such as the <a>hurd-vm-service-type</a>, or the <a>nix-service-type</a>). What's important to know is that the <a>(modify-services)</a> block/option not only <i>modifies</i> a gives set of services, it also outputs the entire modified service definition <b>including all unmodified services</b> back to the system/configuration. This means that we can take a look at the <a href="https://codeberg.org/guix/guix/src/branch/master/gnu/services/desktop.scm">codeberg:guix/guix:gnu/services/desktop.scm</a> services definition to see which services are included in our <a>%desktop-services</a> block, the one we are modifying, and do not need to include any service that is already included in the <a>%desktop-services</a> again. If we want to remove a service which is present in the <a>%desktop-services</a> module, we can simple add <a>(delete [service]-service-type)</a>. Below I defined a few services:
           </p>
           <pre><code class="language-scheme">
 ; ... (use-modules), (use-service-modules), and (use-package-modules) above here.
@@ -319,6 +323,7 @@ permit persist keepenv setenv :wheel"))))
    ))
           </code></pre>
           <br>
+          <h3>Completion</h3>
           <p>
             We're almost done now. The last missing piece, is the <i>nonguix transformation</i> used to enable proprietary Nvidia Drivers. For that, we simply add the following code-block right at the <b>end</b> of our <a>config.scm</a>:
           </p>
@@ -328,6 +333,7 @@ permit persist keepenv setenv :wheel"))))
           </code></pre>
           <br>
 
+          <h3>Result</h3>
           <p>
             And this is it! This is what our complete <a>config.scm</a> now looks like. This configuration is fully functionaly, declares and configures everything we need to get a working system up and running, and more!
           </p>

@@ -1,0 +1,45 @@
+#+TITLE: GNU not Linux
+#+AUTHOR: librepup
+#+DESCRIPTION: Personal Opinion on why the public should switch from the name "Linux" to the name "GNU".
+* Introduction
+Factually: it's GNU/Linux or GNU+Linux.
+GNU is the operating system and userland, Linux is the Kernel. We call Windows "Windows" because that is the operating system, NT
+is the Windows Kernel. We call macOS "macOS" because that's the operating system, not the Xen/Darwin Kernel. Linux is a component
+in a fully functional GNU Operating System. If you want to leave any part out of "GNU+Linux", logically you should leave out the Linux part.
+Because GNU is the operating system. Windows is the operating system, not NT. macOS is the operating system, not Xen/Darwin.
+Calling GNU+Linux just "Linux" strips the GNU Project and Stallmans efforts of credit, falsely gives Torvalds all the credit,
+even though he just made the last missing piece to the GNU operating system, and ignore the fact that Linux is just a Kernel,
+not an operating system.
+
+You do not use just Linux. A kernel allocates resources to applications and manages most of the hardware interactions and other stuff
+to be managed. What you actually interact with is the operating system: the GNU operating system.
+If you do not use GNU and maybe something like busybox, then you'd be using busybox+Linux, or just busybox.
+
+The fact that Linux was not initially developed for the GNU system does not mean it is the biggest, most important, most credible,
+or most notable part of the GNU operating system. You say Windows too, don't you? Not "NT". Because you name what you interact with.
+You rarely inteact directly with the Kernel. The kernel is just a component of the GNU operating system.
+
+You can't randomly give Linux more credit and leave out all of Stallmans and the GNU Projects work just for convenience sake.
+
+* Breakdown
+** Factual Side
+Linux is one component of a complete GNU operating system. Reducing the entire operating system to its Kernel is the same as
+calling "Windows" NT, it's not true. NT is a part of a Windows OS, Linux is a prt of a GNU OS.
+
+** Accuracy
+As stated before, Linux, the Kernel, is part of the GNU operating system. Linux itself without the GNU
+(or any other top-level) operating system is mostly unusable.
+
+** Ethics
+By reducing GNU+Linux to "Linux" you strip all the credit away from the GNU Project and Richard Stallman who developed the GNU
+Project way before Linux was even an idea. GNU is the largest prat of a fully functioning GNU+Linux system. If you want to leave
+out any part for convenience sake, you should leave out the "Linux" part, just like you do with Windows or macOS.
+Do you call Windows "NT"? No. Do you call macOS "Xen/Darwin"? No. Calling GNU+Linux (or just GNU) simply "Linux" is
+disrespectful, inaccurate, strips Stallman of all credit, and ignores the biggest part that makes GNU+Linux functional.
+Which is the GNU operating system.
+
+** Conclusion
+Want a short and easy to pronounce name? "GNU" would be factually more correct than "Linux".
+GNU defines the OS goals, GNU predates the Kernel, GNU supplies the system identity, the Kernel
+is an implementation detail, GNU provides the shells, userland, init-system (originally at least), coreutils, and basically
+everything you interact with, rely on, use on a daily basis, and call "the Operating System".

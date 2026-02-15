@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNU Guix Guide &mdash; librepup</title>
+  <meta name="description" content="librepup's GNU Guix Guide." />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../highlightjs.default.css" />
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+  <script>hljs.highlightAll();</script>
+
+  <header>
+    <div class="site-wrapper">
+      <a class="site-title" href="../index.html">~/librepup</a>
+      <nav>
+        <a href="../index.html">home</a>
+        <a href="../blogs.html">blog</a>
+        <a href="../about.html">about</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="site-wrapper">
+      <article>
+
+        <div class="article-header">
+          <h1>GNU Guix Guide</h1>
+          <p class="article-meta">
+            by librepup &mdash;
+            <span class="tag">gnu</span><span class="tag">linux</span><span class="tag">free software</span><span class="tag">guix</span><span class="tag">guide</span>
+          </p>
+          <a href="./guixguide_easy.html">[simple speech]</a>
+        </div>
+
+        <div class="article-body">
+
+          <h2>Introduction</h2>
+
+          <p>
+            In this Article I will try to explain everything in regards to how my GNU Guix journey went, the hardships I went through, the lessons I learnt, and the system I eventually ended up with. I will go over installing custom channels, setting up proprietary kernels and graphics drivers,- everything from installing basic packages, to managing your entire home environment and configuration setup with Guix Home. Enjoy the ride!
+          </p>
+
+          <h3>Basics</h3>
+
+          <p>
+            To begin your GNU Guix journey, you first need to create a <a>config.scm</a> file somewhere on your machine. This will be your GNU Guix system configuration. We'll get into Guix Home a bit later. For now, let's focus on getting a simple system configuration up and running. We'll define a <a>%guix-os</a> variable, which will contain our entire system expression/definition. In this example we will use <a href="https://gitlab.com/nonguix/nonguix">nonguix</a> for proprietary kernel builds, firmware, initrd, and more. Let's start with a simple <a>(operating-system)</a> block:
+          </p>
+
+          <pre><code class="language-scheme">
+(define %guix-os (operating-system
+ (kernel linux)
+ (initrd microcode-initrd)
+ (firmware (append (list intel-microcode linux-firmware) %base-firmware))
+ (hostname "guix")
+ (timezone "Europe/Berlin")
+ (locale "en_US.utf8")
+ (keyboard-layout (keyboard-layout "us" "colemak"))
+))
+          </code></pre>
+
+        </div>
+
+        <hr class="divider" />
+        <p style="font-size:0.85rem; color: var(--fg-dim);">
+          &larr; <a href="../blogs.html">back to all posts</a>
+        </p>
+
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div class="site-wrapper">
+      <p>&copy; librepup &mdash; built with free software &amp; plain HTML</p>
+    </div>
+  </footer>
+
+</body>
+</html>

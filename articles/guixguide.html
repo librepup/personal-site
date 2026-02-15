@@ -62,6 +62,96 @@
 ))
           </code></pre>
 
+          <br>
+          <p>
+            But <b>wait</b>! We forgot the most important part! To make use of custom packages, kernels, firmware, transformations, and more - we first need to use all the necessary modules that provide these options. Technically we also need to add the channels we want to use <i>first</i>, but we'll get to that later. For now: we will add a few <a>(use-modules)</a> to our <a>config.scm</a>, as well as <a>(use-service-modules)</a> and <a>(use-package-modules)</a> to make our <a>config.scm</a> <b>desktop ready</b>:
+          </p>
+
+          <pre><code class="language-scheme">
+(use-modules (gnu)
+             (gnu system)
+             (gnu system nss)
+             (gnu packages)
+             (gnu packages xorg)
+             (gnu packages certs)
+             (gnu packages shells)
+             (gnu packages admin)
+             (gnu packages base)
+             (gnu services)
+             (gnu services xorg)
+             (gnu services desktop)
+             (gnu services nix) ; Optional, you can remove this if you want.
+             (gnu services sound)
+             (gnu services audio)
+             (gnu services networking)
+             (gnu services virtualization) ; Optional, you can remove this if you want.
+             (guix)
+             (guix utils)
+             ; Nongnu & Nonguix
+             (nongnu packages linux)
+             (nongnu packages nvidia)
+             (nongnu services nvidia)
+             (nongnu system linux-initrd)
+             (nonguix transformations)
+             ; Jonabron
+             (jonabron packages wm)
+             (jonabron packages fonts)
+             (jonabron packages games)
+             (jonabron packages communication))
+
+(use-service-modules desktop sound audio networking ssh xorg dbus)
+(use-package-modules wm bootloaders certs shells version-control xorg)
+
+(define %guix-os (operating-system
+ (kernel linux)
+ (initrd microcode-initrd)
+ (firmware (append (list intel-microcode linux-firmware) %base-firmware))
+ (hostname "guix")
+ (timezone "Europe/Berlin")
+ (locale "en_US.utf8")
+ (keyboard-layout (keyboard-layout "us" "colemak"))
+))
+          </code></pre>
+
+          <br>
+          <p>
+            This may look like a lot of things we've just added, but it's mostly just necessary modules and a few modules/imports from custom channels. We just added:
+          </p>
+            <ul class="post-list">
+              <li>
+                <p> - Necessary <a>(gnu)</a> and <a>(guix)</a> modules.</p>
+                <p> - Modules from the <a href="https://gitlab.com/nonguix/nonguix">nonguix</a> channel.</p>
+                <p> - And modules from the <a href="https://github.com/librepup/jonabron">jonabron</a> channel.</p>
+              </li>
+            </ul>
+
+            <br>
+          <p>
+            Now we can add our user account, this is pretty straight-forward: you pick a username, add your newly created user to a few groups, and optionally set the users default shell, here - let me show you:
+          </p>
+          <pre><code class="language-scheme">
+; ... (use-modules), (use-service-modules), and (use-package-modules) above here.
+
+(define %guix-os (operating-system
+ (kernel linux)
+ (initrd microcode-initrd)
+ (firmware (append (list intel-microcode linux-firmware) %base-firmware))
+ (hostname "guix")
+ (timezone "Europe/Berlin")
+ (locale "en_US.utf8")
+ (keyboard-layout (keyboard-layout "us" "colemak"))
+ (users (cons (user-account
+               (name "puppy")
+               (comment "Puppy")
+               (group "users")
+               (home-directory "/home/puppy")
+               (supplementary-groups '("wheel" "netdev" "audio" "video" "input" "tty" "nixbld"))
+               (shell (file-append zsh "/bin/zsh")))
+              %base-user-accounts))
+))
+          </code></pre>
+
+
         </div>
 
         <hr class="divider" />

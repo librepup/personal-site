@@ -442,6 +442,13 @@
           <div class="hero">
             <h1><a href="../extra/NOTES.org">NOTES.org (Click Here)</a></h1>
           </div>
+          <h3>Hidden Tip</h3>
+          <p>Oh, and one last useful tip on the house: when configuring <b>GNU Emacs</b> under Guix or Guix Home, you do not have to wrap binaries or create packaged Emacs version like you do on NixOS - it is enough to just install a base Emacs Editor package (e.g. <code>emacs</code> or <code>emacs-pgtk</code>), and then install any <code>emacs-</code><i>[package]</i> packages alongside it. GNU Guix automatically configures these packages, as well as the <code>$EMACSLOADPATH</code> variable to point to a <code>/gnu/store/[hash]-profile/share/emacs/site-lisp/</code> directory, which houses all your installed packages and automatically makes them available for use inside Emacs.
+            <br /><br />
+            So installing <code>emacs-pgtk</code>, <code>emacs-doom-modeline</code>, and <code>emacs-multiple-cursors</code> automatically sets up your <code>emacs-pgtk</code> package to see <b>all</b> emacs packages installed alongside it.
+            <br /><br />
+            How cool is that!
+            </p>
         </div>
         <hr class="divider" />
         <p style="font-size:0.85rem; color: var(--fg-dim);">

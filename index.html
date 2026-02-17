@@ -1,13 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
+<!-- For local testing, set: 'security.fileuri.strict_origin_policy' = 'false' in Firefox about:config. -->
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>librepup's blog</title>
-  <link rel="stylesheet" href="style.css" />
+  <!-- Meta -->
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#0f0f0f">
+  <meta name="referrer" content="no-referrer">
+  <meta name="keywords" content="fsf, gnu, linux, librepup, nixpup, blog, guix, free software, stallman, richard stallman, puppy, guides, politics, opinions">
+  <meta content="librepup's blog" property="og:site_name">
+  <meta content="Thoughts on free software, GNU, and the world of libre computing." property="og:title">
+  <!-- Icons -->
+  <link rel="shortcut icon" href="./img/icon.ico">
+  <link rel="icon" type="image/png" href="./img/gnu_logo_small.png" sizes="256x256">
+  <!-- CSS -->
+  <link rel="stylesheet" href="style.css">
+  <!-- JS -->
+  <script src="./js/quotes.js"></script>
 </head>
 <body>
-
   <header>
     <div class="site-wrapper">
       <a class="site-title" href="index.html">~/librepup</a>
@@ -18,17 +30,13 @@
       </nav>
     </div>
   </header>
-
   <main>
     <div class="site-wrapper">
-
       <div class="hero">
         <h1>librepup's blog</h1>
         <p>Thoughts on free software, GNU, and the world of libre computing.</p>
       </div>
-
       <h2>Recent Posts</h2>
-
       <ul class="post-list">
         <li>
           <a class="post-title" href="./articles/guixguide.html">GNU Guix Guide</a>
@@ -47,15 +55,20 @@ In this Article I will try to explain everything in regards to how my GNU Guix j
           </p>
         </li>
       </ul>
-
+      <div class="hero">
+        <h1>Random Quote:</h1>
+        <p>
+          <div id="quote-display">
+            Prepairing Quote...
+          </div>
+        </p>
+      </div>
     </div>
   </main>
-
   <footer>
     <div class="site-wrapper">
       <p>&copy; librepup &mdash; built with free software &amp; plain HTML</p>
     </div>
   </footer>
-
 </body>
 </html>

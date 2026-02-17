@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNU Guix Channels Guide &mdash; librepup</title>
+  <meta name="description" content="librepup's GNU Guix Guide." />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../highlightjs.default.css" />
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+  <script>hljs.highlightAll();</script>
+
+  <header>
+    <div class="site-wrapper">
+      <a class="site-title" href="../index.html">~/librepup</a>
+      <nav>
+        <a href="../index.html">home</a>
+        <a href="../blogs.html">blog</a>
+        <a href="../about.html">about</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="site-wrapper">
+      <article>
+
+        <div class="article-header">
+          <h1>GNU Guix Channels Guide</h1>
+          <p class="article-meta">
+            by librepup &mdash;
+            <span class="tag">gnu</span><span class="tag">linux</span><span class="tag">free software</span><span class="tag">guix</span><span class="tag">guide</span>
+          </p>
+          <a href="./guixguide_easy.html">[simple speech]</a> <a href="https://github.com/librepup/geex">[geex repo]</a> <a href="https://github.com/librepup/jonabron">[jonabron repo]</a>
+        </div>
+
+        <div class="article-body">
+
+          <h2>Introduction</h2>
+
+          <p>
+            In this little last extra section of the Guix Guide article series, we will briefly go over Guix Channels, how to set them up, and how to use them. Below is an example <code>channels.scm</code> file, this usually resides in <code>~/.config/guix/channels.scm</code>:
+          </p>
+
+          <h3>Channels File</h3>
+
+          <pre><code class="language-scheme">
+(append (list
+         (channel
+          (name 'jonabron)
+          (branch "master")
+          (url "https://github.com/librepup/jonabron.git"))
+         (channel
+          (name 'nonguix)
+          (url "https://gitlab.com/nonguix/nonguix")
+          (commit "48a8706d44040cc7014f36873dbd834c048aadd3")
+          (introduction
+           (make-channel-introduction
+            "897c1a470da759236cc11798f4e0a5f7d4d59fbc"
+            (openpgp-fingerprint
+             "2A39 3FFF 68F4 EF7A 3D29  12AF 6F51 20A0 22FB B2D5"))))
+         (channel
+           (name 'guix)
+           (url "https://git.guix.gnu.org/guix.git")
+           (commit "4baa120b8b298bec155c5b12c8068dda3c07df40")
+           (branch "master")
+           (introduction
+             (make-channel-introduction
+               "9edb3f66fd807b096b48283debdcddccfea34bad"
+               (openpgp-fingerprint
+                "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+         (channel
+          (name 'emacs)
+          (url "https://github.com/garrgravarr/guix-emacs")
+          (commit "6601278b9ec901e20cfe5fd9caee3d9ce6e6d0c9")
+          (introduction
+           (make-channel-introduction
+            "d676ef5f94d2c1bd32f11f084d47dcb1a180fdd4"
+            (openpgp-fingerprint
+             "2DDF 9601 2828 6172 F10C  51A4 E80D 3600 684C 71BA")))))
+        %default-channels)
+          </code></pre>
+
+          <br>
+          <p>
+            This basic <code>channels.scm</code> file tells Guix where to look for channels. Channels are (usually) repositories which contain package definitions/recipes, system modules, services, and more! They can be incredibly useful, for example: the <code>emacs</code> channel includes freshly built melpa packages for GNU Emacs. This is useful for when an Emacs Package is not yet in the official guix repositories/guix channel.
+            <br /><br />
+            I also have my own channel, the <a href="https://github.com/librepup/jonabron">jonabron</a> channel. This channel provides a discord package, the vicinae application launcher, the game osu!(lazer), and some other useful stuff you may want to install or use. Adding channels to your <code>channels.scm</code> file is relatively easy, the basic skeleton of a new channel looks like this:
+          </p>
+
+          <h3>Channel Skeleton</h3>
+          <pre><code class="language-scheme">
+(channel
+  (name 'guix) ; Put your Channels Name here.
+  (url "https://git.guix.gnu.org/guix.git") ; The Repository URL goes here!
+  (commit "4baa120b8b298bec155c5b12c8068dda3c07df40") ; Totally optional, but here you can specify a commit.
+  (branch "master") ; Declare which branch of the repository to use.
+  ; The channel introduction below is not needed for *every* channel,
+  ; but some channels require or at least advocate for you specifying one.
+  (introduction
+    (make-channel-introduction
+      "9edb3f66fd807b096b48283debdcddccfea34bad"
+      (openpgp-fingerprint
+       "BBB0 2DDF 2CEA F6A8 0D1D  E643 A2A0 6DF2 A33A 54FA"))))
+          </code></pre>
+
+          <br>
+          <p>
+            And that's pretty much it! After specifying all the channels you want in your <code>~/.config/guix/channels.scm</code>, simply run the command <code>guix pull</code>, and guix will update all the channels and rebuild itself. Note that a guix pull does <i>not</i> rebuild your entire system - it merely rebuilds the channel definitions that guix uses for commands such as <code>guix install</code> or <code>guix search</code>.<br /><br />
+            At last, you should run <code>hash guix</code> once the previous <code>guix pull</code> is finished. And then you're ready to go and use your newly added channels!
+          </p>
+        </div>
+        <hr class="divider" />
+        <p style="font-size:0.85rem; color: var(--fg-dim);">
+          &larr; <a href="./guixguide.html">back to main article</a>
+        </p>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <div class="site-wrapper">
+      <p>&copy; librepup &mdash; built with free software &amp; plain HTML</p>
+    </div>
+  </footer>
+</body>
+</html>

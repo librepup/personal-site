@@ -1,0 +1,344 @@
+#+TITLE: Guix Notes
+#+AUTHOR: librepup/nixpup
+#+DESCRIPTION: Notes, Tips, and useful Information about GNU Guix
+* Chapters
+** GNU Hurd
+*** System Service Setup
+#+BEGIN_SRC emacs-lisp
+(services
+ (append
+  (list
+   (service hurd-vm-service-type
+            (hurd-vm-configuration
+             (memory-size 2048)
+             (secret-directory "/etc/guix/hurd-secrets")))
+  )
+ )
+)
+#+END_SRC
+*** Entering
+Enter Hurd via `ssh -p 2222 root@localhost`. (+`-X` for X11 passthrough)
+
+*** File Transfer
+Copy files to Hurd via `scp -P 2222 <file> root@localhost:~/`, and similarly, from Hurd, via `scp -P 2222 root@localhost:/hurd/path/to/file ./`.
+
+*** SSH Setup
+Generate SSH Key via `ssh-keygen -t ed25519`, spam enter to not set a passphrase and use the default settings, then copy the `~/.ssh/id_XXXXXXX.pub` key into `/etc/guix/hurd-secrets` before rebuilding the system.
+
+*** Shepherd Service Commands
+**** Hurd Status
+`herd status hurd-vm`
+
+**** Stop Hurd
+`herd stop hurd-vm`
+
+**** Start Hurd
+`herd start hurd-vm`
+
+*** Optional Fixes
+**** X11 Forwarding
+In case X11/Xorg forwarding via SSH does not work, it may be advised to set an option such as `xhost +local:root`.
+
+** Commands
+*** After Fist Install
+To update the Guix Channels and pull the latest Guix and Channel Versions, run `guix pull`.
+Then, to rebuild your system, run `sudo guix system reconfigure /path/to/config.scm`.
+After running `guix pull`, remember to run `hash guix` to update bash's cache and clear it of the old guix binary location.
+Also make sure that "~/.config/guix/channels.scm" or "/etc/guix/channels.scm" is the *first* item in your $PATH.
+
+*** Installation Process
+**** Channel Setup
+1. `guix shell git-minimal`
+2. `git clone https://github.com/librepup/geex.git`
+3. `mkdir -p /mnt/geex`
+4. `mkdir -p ~/.config/guix`
+5. `cp ./geex/channels.scm ~/.config/guix/channels.scm`
+6. `guix archive --authorize < ./geex/files/keys/nonguix.pub`
+7. `guix pull`
+
+**** Partitioning and System Init
+***** General
+1. `mount /dev/sda1 /mnt`
+2. `mkdir -p /mnt/boot/efi`
+3. `mount /dev/sda2 /mnt/boot/efi`
+4. `herd start cow-store /mnt`
+5. `guix system init /path/to/config.scm /mnt`
+6. `mkdir -o /mnt/etc/guix`
+7. `mv /path/to/geex/* /mnt/etc/guix/`
+
+***** (U)EFI
+Basic (U)EFI Partition Layout and Creation Process:
+
+#+BEGIN_SRC markdown
+# Partition
+parted /dev/sda
+  mklabel gpt
+  mkpart ESP fate32 1MiB 2048MiB
+  set 1 esp on
+  mkpart primary ext4 2048MiB 100%
+  quit
+
+mkfs.fat -F32 /dev/sda1
+mkfs.ext4 /dev/sda2
+
+# Mount
+mount /dev/sda2 /mnt
+mkdir -p /mnt/boot/efi
+mount /dev/sda1 /mnt/boot/efi
+#+END_SRC
+
+`config.scm` Bootloader and Filesystem Configuration for (U)EFI Setup:
+
+#+BEGIN_SRC guile
+(bootloader (bootloader-configuration
+  (bootloader grub-efi-bootloader)
+  (targets '("/boot/efi"))
+  (keyboard-layout keyboard-layout)))
+
+(file-systems (cons* (file-system
+                      (device (uuid "root-part-uuid"))
+                      (mount-point "/")
+                      (type "ext4"))
+                     (file-system
+                      (device (uuid "efi-part-uuid"))
+                      (mount-point "/boot/efi")
+                      (type "vfat"))
+                     %base-file-systems))
+#+END_SRC
+
+*** Wifi Configuration
+**** Commands
+1. `rfkill unblock all`
+2. `ifconfig -a`
+   + Find WiFi Device/Cards Name
+3. `wpa_supplicant -c wifi.conf -i interface1s0 -B`
+4. `dhclient -v interface1s0`
+5. `nmcli device wifi list`
+6. `nmcli device wifi connect "SSID" password "PASSWORD"`
+
+**** wifi.conf
+#+BEGIN_SRC sh
+network={
+  ssid="ssid-name"
+  key_mgmt=WPA-PSK
+  psk="password"
+}
+#+END_SRC
+
+Or for an open network:
+
+#+BEGIN_SRC sh
+network={
+  ssid="ssid-name"
+  key_mgmt=NONE
+  priority=1
+}
+#+END_SRC
+
+*** Useful Commands
+**** List System Generations
+#+BEGIN_SRC sh
+guix system list-generations
+#+END_SRC
+**** Describe System Generation
+#+BEGIN_SRC sh
+guix system describe
+#+END_SRC
+**** Delete Generations older than 1 Month
+#+BEGIN_SRC sh
+sudo guix system delete-generations 1m
+#+END_SRC
+**** Roll Back to Older Generation
+#+BEGIN_SRC sh
+sudo guix system roll-back
+#+END_SRC
+**** Guix Garbage Collector
+Delete Generations older than 1 Month, and try to free up at least 10GiB.
+#+BEGIN_SRC sh
+guix gc -d 1m -F 10G
+#+END_SRC
+**** Deduplicate/Optimize Guix Store
+#+BEGIN_SRC sh
+guix gc --optimize
+#+END_SRC
+**** Reconfigure Guix Home
+#+BEGIN_SRC sh
+guix home reconfigure /path/to/home.scm
+#+END_SRC
+**** Describe/List Channels
+#+BEGIN_SRC sh
+guix describe
+#+END_SRC
+**** Upgrade Packages
+#+BEGIN_SRC sh
+guix upgrade
+#+END_SRC
+**** Reformat/Style Scheme File
+This can help to find syntax errors, such as misplaced brackets, easier.
+#+BEGIN_SRC sh
+guix style -f config.scm
+#+END_SRC
+**** List Installed Packages
+#+BEGIN_SRC sh
+guix package --list-installed
+#+END_SRC
+**** Install Package
+#+BEGIN_SRC sh
+guix install
+#+END_SRC
+**** Remove Package
+#+BEGIN_SRC sh
+guix remove
+#+END_SRC
+**** Delete Old Package Generations
+#+BEGIN_SRC sh
+guix package --delete-generations
+#+END_SRC
+
+*** Shepherd Commands
+**** Start Service
+#+BEGIN_SRC sh
+sudo herd start name
+#+END_SRC
+**** Stop Service
+#+BEGIN_SRC sh
+sudo herd stop name
+#+END_SRC
+**** Restart Service
+#+BEGIN_SRC sh
+sudo herd restart name
+#+END_SRC
+**** Service Status
+#+BEGIN_SRC sh
+sudo herd status name
+#+END_SRC
+**** List Services
+#+BEGIN_SRC sh
+sudo herd status
+#+END_SRC
+*** Combinations
+**** Guix Garbage Collecting
+1. `guix gc`
+2. `sudo guix system delete-generations 1d`
+3. `guix package --delete-generations`
+
+**** Guix Pull and Daemon Restart
+1. `guix pull`
+2. `sudo systemctl restart guix-daemon.service` or `sudo herd restart guix-daemon`
+
+** Post-Installation Setup
+*** Passwords
+Set passwords for users inside the "/mnt"-mounted GNU+Linux install.
+#+BEGIN_SRC sh
+passwd -R /mnt root
+passwd -R /mnt puppy
+#+END_SRC
+** Snippets
+*** Pin Kernel Version
+Use this to pin nonguix & guix channel to linux kernel 6.18.7 commit, so that not every rebuild, rebuilds the entire kernel.
+#+BEGIN_SRC emacs-lisp
+(operating-system
+  (kernel (let*
+              ((channels
+                (list (channel
+                       (name 'nonguix)
+                       (url "https://gitlab.com/nonguix/nonguix")
+                       (commit "6c0ea215e0bd089bf3b2097e5c59dd726fbbe3045"))
+                      (channel
+                       (name 'guix)
+                       (url "https://git.guix.gnu.org/guix.git")
+                       (commit "9e6705676ffb7568d03b2b6c9fa3944afa2341e7"))))
+               (inferior
+                (inferior-for-channels channels)))
+              (first (lookup-inferior-packages inferior "linux" "6.18.7"))))
+)
+#+END_SRC
+*** Bootloader
+**** Legacy/BIOS
+#+BEGIN_SRC emacs-lisp
+(bootloader (bootloader-configuration
+             (keyboard-layout keyboard-layout)
+             (bootloader grub-bootloader)
+             (targets '("/dev/sda1"))))
+#+END_SRC
+**** (U)EFI
+#+BEGIN_SRC emacs-lisp
+(bootloader (bootloader-configuration
+             (keyboard-layout keyboard-layout)
+             (bootloader grub-efi-bootloader)
+             (targets '("/boot/efi"))))
+#+END_SRC
+*** File-System
+Create the root (/) partition with label "guix-root", and the boot partition (if present) with label "guix-efi" or "guix-boot".
+Labels can be attached afterwards via 'sudo e2label /dev/sda1 guix-root' or 'sudo tune2fs -L guix-root /dev/sda1'.
+**** Encrypted
+#+BEGIN_SRC emacs-lisp
+(file-systems (append
+               (list (file-system
+                      (device "/dev/mapper/cryptroot")
+                      (mount-point "/")
+                      (type "ext4")
+                      (dependencies mapped-devices))
+                     (file-system
+                      (device (uuid "PARTITION_1_UUID" 'fat32))
+                      (mount-point "/boot/efi")
+                      (type "vfat")))
+               %base-file-systems))
+#+END_SRC
+**** Regular (U)EFI
+#+BEGIN_SRC emacs-lisp
+(file-systems (cons* (file-system
+                      (mount-point "/")
+                      (device (file-system-label "guix-root"))
+                      (type "ext4"))
+                     (file-system
+                      (mount-point "/boot/efi")
+                      (device (file-system-label "guix-efi"))
+                      ; or:
+                      ;  (device (uuid "PartitionUUID"))
+                      ; optional:
+                      ;  (device (uuid "PartitionUUID" 'fat32))
+                      (type "vfat"))
+                     %base-file-systems))
+#+END_SRC
+**** Regular (Legacy/BIOS)
+#+BEGIN_SRC emacs-lisp
+(file-systems (cons* (file-system
+                      (mount-point "/")
+                      (device (file-system-label "guix-root"))
+                      (type "ext4"))
+                     %base-file-systems))
+#+END_SRC
+*** Nonguix Transformation
+See Nonguix Documentation (https://gitlab.com/nonguix/nonguix), Section: NVIDIA Graphics Card -> System Setup.
+**** Xorg
+#+BEGIN_SRC emacs-lisp
+((nonguix-transformation-nvidia #:configure-xorg? #t)
+ %guix-os)
+#+END_SRC
+**** Wayland
+#+BEGIN_SRC emacs-lisp
+((compose (nonguix-transformation-nvidia))
+ %guix-os)
+#+END_SRC
+*** Service Configuration
+**** Delete Service
+#+BEGIN_SRC emacs-lisp
+(modify-services %desktop-services
+ (delete pulseaudio-service-type)
+)
+#+END_SRC
+**** Xorg Nvidia Service
+#+BEGIN_SRC emacs-lisp
+(services
+ (append
+  (list
+   (set-xorg-configuration
+    (xorg-configuration
+     (keyboard-layout keyboard-layout)
+     (modules (cons nvidia-driver %default-xorg-modules))
+     (drivers '("nvidia"))))
+  )
+ )
+)
+#+END_SRC

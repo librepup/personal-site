@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNU Guix Home Guide &mdash; librepup</title>
+  <meta name="description" content="librepup's GNU Guix Guide." />
+  <link rel="stylesheet" href="../style.css" />
+  <link rel="stylesheet" href="../highlightjs.default.css" />
+  <script src="../js/highlight.min.js"></script>
+</head>
+<body>
+  <script>hljs.highlightAll();</script>
+
+  <header>
+    <div class="site-wrapper">
+      <a class="site-title" href="../index.html">~/librepup</a>
+      <nav>
+        <a href="../index.html">home</a>
+        <a href="../blogs.html">blog</a>
+        <a href="../about.html">about</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="site-wrapper">
+      <article>
+
+        <div class="article-header">
+          <h1>GNU Guix Home Guide</h1>
+          <p class="article-meta">
+            by librepup &mdash;
+            <span class="tag">gnu</span><span class="tag">linux</span><span class="tag">free software</span><span class="tag">guix</span><span class="tag">guide</span>
+          </p>
+          <a href="./guixguide_easy.html">[simple speech]</a> <a href="https://github.com/librepup/geex">[geex repo]</a> <a href="https://github.com/librepup/jonabron">[jonabron repo]</a>
+        </div>
+
+        <div class="article-body">
+
+          <h2>Introduction</h2>
+
+          <p>
+            As previously announced, we will not delve into your <b>Guix Home</b> configuration. GNU Guix Home is basically a dotfile manager, service configuration system, and package profile manager, meaning you can install packages for specific home environments (users), without polluting the entire system-wide configuration and list of packages. You can also manage your dotfiles with Guix Home. First, let us create a basic outline/skeleton for our <code>home.scm</code> Guix Home file.
+
+            We will begin by adding a few <code>(use-modules)</code>, as well as the basic structure for a Guix Home configuration:
+          </p>
+
+          <h3>Basics</h3>
+
+          <pre><code class="language-scheme">
+(use-modules (gnu)
+             (gnu home)
+             (gnu home services)
+             (gnu home services shells)
+             (gnu home services sound)
+             (gnu home services admin)
+             (gnu home services desktop)
+             (gnu services)
+             (gnu packages)
+             (gnu packages shellutils)
+             (gnu packages emacs)
+             (gnu packages emacs-xyz)
+             (gnu packages xorg)
+             (gnu packages certs)
+             (gnu packages shells)
+             (gnu packages admin)
+             (gnu packages base)
+             (guix)
+             (guix utils)
+             (guix packages)
+             (guix gexp)
+             (guix git-download)
+             (guix build utils)
+             (ice-9 ftw)
+             (ice-9 rdelim)
+             (guix build-system emacs)
+             (jonabron packages emacs)
+             (jonabron packages fonts)
+             (jonabron packages communication)
+             (jonabron packages games)
+             (jonabron packages wm)
+             (nongnu packages video)
+             (nongnu packages game-client)
+             (emacs packages melpa))
+
+(define zsh (specification->package "zsh"))
+(define zsh-autosuggestions (specification->package "zsh-autosuggestions"))
+
+(home-environment
+ (packages (specifications->packages
+           (list "git"
+                 ; Desktop Applications
+                 "discord"
+                 "element-desktop"
+                 "osu-lazer-bin"
+                 "vicinae"
+                 "naitre"
+                 "icecat"
+                 "icedove"
+                 "icedove-wayland"
+                 "firefox"
+                 "thunar"
+                 "mpv-nvidia"
+                 "steam-nvidia"
+                 "protonup"
+                 ; ZSH
+                 "zsh"
+                 "zsh-autosuggestions"
+                 "zsh-syntax-highlighting"
+                 ; Emacs
+                 "emacs-pgtk"
+                 "emacs-fancy-dabbrev"
+                 "emacs-hoon-mode"
+                 "emacs-emms"
+                 "emacs-impatient-mode"
+                 "emacs-vim-tab-bar"
+                 "emacs-erc"
+                 "emacs-erc-image"
+                 "emacs-windower"
+                 "emacs-company"
+                 "emacs-corfu-terminal"
+                 "emacs-guix"
+                 "emacs-simple-httpd"
+                 "emacs-org"
+                 "emacs-pabbrev"
+                 "emacs-use-package"
+                 "emacs-lsp-mode"
+                 "emacs-lsp-ui"
+                 "emacs-markdown-mode"
+                 "emacs-multi-term"
+                 "emacs-multiple-cursors"
+                 "emacs-nix-mode"
+                 "emacs-rainbow-mode"
+                 "emacs-wttrin"
+                 "emacs-hydra"
+                 "emacs-major-mode-hydra"
+                 "emacs-all-the-icons"
+                 "emacs-all-the-icons-dired"
+                 "emacs-haskell-mode"
+                 "emacs-arduino-mode"
+                 "emacs-flycheck"
+                 "emacs-bongo"
+                 "emacs-compat"
+                 "emacs-xelb"
+                 "emacs-iedit"
+                 "emacs-anzu"
+                 "emacs-visual-regexp"
+                 "emacs-sudo-edit"
+                 "emacs-pdf-tools"
+                 "emacs-magit"
+                 "emacs-beacon"
+                 "emacs-doom-modeline"
+                 "emacs-org-texlive-collection"
+                 ; EXWM
+                 "emacs-exwm"
+                 "emacs-exwm-x"
+                 "emacs-desktop-environment"
+                 "emacs-helm-exwm"
+                 "emacs-helm"
+                 "emacs-browse-url-dwim"
+                 "emacs-exwm-surf"
+                 "emacs-exwm-ss"
+                 "emacs-exwm-modeline"
+                 "emacs-exwm-float"
+                 "emacs-exwm-firefox"
+                 "emacs-exwm-edit"
+                 "emacs-exwm-mff"
+                 "emacs-dmenu"
+                 ; Tools
+                 "xinput"
+                 "xmodmap"
+                 "gsettings-desktop-schemas"
+                 "dmenu"
+                 "eza"
+                 "bat"
+                 "zoxide"
+                 "ripgrep"
+                 "grep"
+                 "libnotify"
+                 "coreutils"
+                 "glibc-locales"
+                 "ncurses"
+                 "opendoas"
+                 "fzf"
+                 "guile"
+                 "gammastep"
+                 "pipewire"
+                 "wireplumber"
+                 "wpa-supplicant"
+                 "curl"
+                 "nss-certs"
+                 "dunst"
+                 "rsync"
+                 "redshift"
+                 "flameshot"
+                 "imv"
+                 "alsa-utils"
+                 "pavucontrol"
+                 "pulseaudio"
+                 "pulsemixer"
+                 "imagemagick"
+                 "yt-dlp"
+                 "wl-clipboard"
+                 "dank-material-shell"
+                 "grim"
+                 "grimblast"
+                 "unrar-free"
+                 "unzip"
+                 "7zip"
+                 "openssl"
+                 "tumbler"
+                 "dbus"
+                 "cryptsetup"
+                 "testdisk"
+                 "usbutils"
+                 "pamixer"
+                 "gcc-toolchain"
+                 "wf-recorder"
+                 "swaybg"
+                 "waybar"
+                 "swayidle"
+                 "wlsunset"
+                 "wofi"
+                 "xwayland-satellite"
+                 "xwayland-run"
+                 "slurp"
+                 "grimshot"
+                 "cliphist"
+                 "xdg-desktop-portal"
+                 "xdg-desktop-portal-wlr"
+                 ; Fonts
+                 "font-jonafonts"
+                 "font-dejavu"
+                 "font-google-noto-emoji"
+                 ; Terminal
+                 "kitty"
+                 ; Fetchers
+                 "fastfetch"
+                 )))
+          </code></pre>
+
+          <br>
+          <p>
+            This basic outline includes all necessary <b>modules</b>, configures two zsh shell plugins to be usable later on, and installs a <b>ton</b> of packages. Pretty simple, isn't it? :3
+
+            Now we will focus on services, which is where the <i>meat</i> of Guix Home lays. We could use a guix home feature to symlink a single directory across our entire user home directory, but since I want certain parts of my configuration directories to still be mutable (i.e. modifyable by the user - and not a symlink by guix home), I will use manual <code>simple-service</code>s for the dotfile configuration. Take a look!
+          </p>
+
+          <h3>Services and Dotfiles</h3>
+          <pre><code class="language-scheme">
+; Rest of the file above...
+(services (list
+           ;;; PipeWire
+           (service home-dbus-service-type)
+           (service home-pipewire-service-type
+                    (home-pipewire-configuration
+                     (enable-pulseaudio? #t)))
+           ;;; ZSH Configuration
+           (service home-zsh-service-type
+                    (home-zsh-configuration
+                     (environment-variables '(("PS1" . "  %~ ")
+                                              ("PROMPT" . "  %~ ")
+                                              ("TERMINFO_DIRS" . "$HOME/.guix-home/profile/share/terminfo")
+                                              ("TERM" . "kitty")
+                                              ("LANG" . "en_US.UTF-8")
+                                              ("LC_CTYPE" . "en_US.UTF-8")
+                                              ("LC_ALL" . "en_US.UTF-8")
+                                              ("GUIX_LOCPATH" . "$HOME/.guix-home/profile/lib/locale:$HOME/.guix-profile/lib/locale:/guix/current/lib/locale")
+                                              ("EDITOR" . "emacs")))
+                     (zshrc
+                      (list
+                       (local-file "files/config/zshrc")
+                     ))))
+
+                ;;; Environment Variables
+                (simple-service 'environment-variables-config
+                                home-environment-variables-service-type
+                                `(("PAGER" . "LESS")
+                                  ("TERMINAL" . "kitty")
+                                  ("EDITOR" . "emacs")
+                                  ("VISUAL" . "emacs")
+                                  ("WAYLAND_DISPLAY" . "wayland-0")
+                                  ("SDL_VIDEODRIVER" . "wayland")
+                                  ("ELECTRON_OZONE_PLATFORM_HINT" . "wayland")
+                                  ("MOZ_ENABLE_WAYLAND" . "1")
+                                  ("GBM_BACKEND" . "nvidia-drm")
+                                  ("__GLX_VENDOR_LIBRARY_NAME" . "nvidia")
+                                  ("DISPLAY" . ":0")
+                                  ("XDG_CURRENT_DESKTOP" . "naitre")
+                                  ("XDG_SESSION_TYPE" . "wayland")
+                                  ("XDG_SESSION_DESKTOP" . "naitre")
+                                  ("QT_QPA_PLATFORM" . "wayland")
+                                  ("QT_QPA_PLATFORMTHEME" . "qt5ct")
+                                  ("QT_WAYLAND_DISABLE_WINDOWDECORATION" . "1")
+                                  ("NIXOS_OZONE_WL" . "1")
+                                  ("OZONE_PLATFORM" . "wayland")
+                                  ("GDK_BACKEND" . "wayland")
+                                  ("WINDOW_MANAGER" . "naitre")
+                                  ("DESKTOP_SESSION" . "naitre")
+                                  ("GSK_RENDERER" . "gl")
+                                  ("SHELL" . ,(file-append zsh "/bin/zsh"))
+                                  ("LESSHISTFILE" . "$XDG_CACHE_HOME/.lesshst")))
+
+                (simple-service 'mpv-config
+                                home-files-service-type
+                                `((".config/mpv" ,(local-file "files/config/mpv" #:recursive? #t))))
+                (simple-service 'dot-emacs-config
+                                home-files-service-type
+                                `((".emacs" ,(local-file "files/config/guixmacs/emacs"))))
+                (simple-service 'guixmacs-themes-config
+                                home-files-service-type
+                                `((".guixmacs/themes" ,(local-file "files/config/guixmacs/files/themes" #:recursive? #t))))
+                (simple-service 'guixmacs-logo-config
+                                home-files-service-type
+                                `((".guixmacs/files" ,(local-file "files/config/guixmacs/files/images" #:recursive? #t))))
+                (simple-service 'guixmacs-config
+                                home-files-service-type
+                                `((".guixmacs/config" ,(local-file "files/config/guixmacs/config" #:recursive? #t))))
+                (simple-service 'guixmacs-exwm-config
+                                home-files-service-type
+                                `((".guixmacs/exwm" ,(local-file "files/config/guixmacs/files/exwm" #:recursive? #t))))
+                (simple-service 'discord-config
+                                home-files-service-type
+                                `((".config/vesktop" ,(local-file "files/config/discord" #:recursive? #t))))
+                (simple-service 'dunst-config
+                                home-files-service-type
+                                `((".config/dunst" ,(local-file "files/config/dunst" #:recursive? #t))))
+                (simple-service 'fastfetch-config
+                                home-files-service-type
+                                `((".config/fastfetch" ,(local-file "files/config/fastfetch" #:recursive? #t))))
+                (simple-service 'hyprlock-config
+                                home-files-service-type
+                                `((".config/hyprlock" ,(local-file "files/config/hyprlock" #:recursive? #t))))
+                (simple-service 'kitty-config
+                                home-files-service-type
+                                `((".config/kitty" ,(local-file "files/config/kitty" #:recursive? #t))))
+                (simple-service 'waybar-config
+                                home-files-service-type
+                                `((".config/waybar" ,(local-file "files/config/waybar" #:recursive? #t))))
+                (simple-service 'zathura-config
+                                home-files-service-type
+                                `((".config/zathura" ,(local-file "files/config/zathura" #:recursive? #t))))
+                (simple-service 'btop-config
+                                home-files-service-type
+                                `((".config/btop" ,(local-file "files/config/btop" #:recursive? #t))))
+                (simple-service 'polybar-config
+                                home-files-service-type
+                                `((".config/polybar" ,(local-file "files/config/polybar" #:recursive? #t))))
+                (simple-service 'scripts-config
+                                home-files-service-type
+                                `((".scripts" ,(local-file "files/scripts" #:recursive? #t))))
+                (simple-service 'wallpapers-config
+                                home-files-service-type
+                                `(("Pictures/Wallpapers" ,(local-file "files/pictures/Wallpapers" #:recursive? #t))))
+                (simple-service 'icons-config
+                                home-files-service-type
+                                `(("Pictures/Icons" ,(local-file "files/pictures/Icons" #:recursive? #t))))
+                (simple-service 'stallman-config
+                                home-files-service-type
+                                `(("Pictures/Stallman" ,(local-file "files/pictures/Stallman" #:recursive? #t))))
+                (simple-service 'naitre-config
+                                home-files-service-type
+                                `((".config/naitre" ,(local-file "files/config/naitre" #:recursive? #t))))
+                ))
+)
+          </code></pre>
+
+          <br>
+          <p>
+            Most of this code is very intuitive and easily readable, but to understand what is symlinked to where, here is the directory tree of my <code>/etc/guix</code> directory for context:
+          </p>
+          <h3>Directory Tree/Structure</h3>
+          <pre><code>
+/etc/guix/
+├── channels.scm
+├── config.scm
+├── files
+│   ├── config
+│   │   ├── btop
+│   │   │   └── btop.conf
+│   │   ├── discord
+│   │   │   └── guix.css
+│   │   ├── dunst
+│   │   │   └── dunstrc
+│   │   ├── fastfetch
+│   │   │   └── config.jsonc
+│   │   ├── guixmacs
+│   │   │   ├── config
+│   │   │   │   └── e.org
+│   │   │   ├── emacs
+│   │   │   ├── files
+│   │   │   │   └── guix_logo_small.png
+│   │   │   ├── themes
+│   │   │   │   └── guix-theme.el
+│   │   │   └── user.org
+│   │   ├── hyprlock
+│   │   │   └── hyprlock.conf
+│   │   ├── kitty
+│   │   │   ├── guixColorscheme.conf
+│   │   │   └── kitty.conf
+│   │   ├── main.conf
+│   │   ├── mpv
+│   │   │   ├── input.conf
+│   │   │   ├── mpv.conf
+│   │   │   └── scripts
+│   │   │       └── autoload.lua
+│   │   ├── naitre
+│   │   │   └── config.conf
+│   │   ├── polybar
+│   │   │   └── config.ini
+│   │   ├── waybar
+│   │   │   ├── config.jsonc
+│   │   │   ├── guix.css
+│   │   │   ├── layout.jsonc
+│   │   │   └── style.css
+│   │   ├── zathura
+│   │   │   └── zathurarc
+│   │   └── zshrc
+│   ├── keys
+│   │   ├── nonguix.pub
+│   │   └── panther.pub
+│   ├── pictures
+│   │   └── Wallpapers
+│   │       └── guix.png
+│   └── scripts
+│       └── waybar.sh
+├── home.scm
+└── systems
+    ├── desktop.scm
+    ├── laptop.scm
+    ├── libre.scm
+    └── minimal.scm
+          </code></pre>
+          <br>
+          <p>
+            As you can see, I symlink/manage configuration directories recursively (<code>#:recursive? #t</code>) with Guix Home, as well as single files like the <code>~/.emacs</code> file. You can freely create <code>simple-service</code>s to manage all kinds of files, configurations, and more (!) by creating new <code>simple-service</code>s to symlink them into the users home directory. The user who's home directory will be populated with these Guix Home files, options, and services is <b>always</b> the user which executes <code>guix home reconfigure /etc/guix/home.scm</code>. So you can re-use your <code>home.scm</code> file across multiple users, or create custom ones for each and every user you want to set a Guix Home up for.
+
+            And that's it! That was a short introduction and guide on how to use, configure, and set up GNU Guix and Guix Home on your device! Attached is a file called <code>NOTES.org</code> (this file is also in the <a href="https://github.com/librepup/geex">geex</a> repository), which contains a few useful code snippets, configuration options, and commands to remember for your everyday GNU Guix journey!
+          </p>
+          <br>
+          <div class="hero">
+            <h1><a href="../extra/NOTES.org">NOTES.org (Click Here)</a></h1>
+          </div>
+        </div>
+        <hr class="divider" />
+        <p style="font-size:0.85rem; color: var(--fg-dim);">
+          &larr; <a href="./guixguide.html">back to main article</a>
+        </p>
+      </article>
+    </div>
+  </main>
+  <footer>
+    <div class="site-wrapper">
+      <p>&copy; librepup &mdash; built with free software &amp; plain HTML</p>
+    </div>
+  </footer>
+</body>
+</html>

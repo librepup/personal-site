@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GNU not Linux &mdash; librepup</title>
+  <meta name="description" content="Personal Opinion on why the public should switch from the name &quot;Linux&quot; to the name &quot;GNU&quot;." />
+</head>
+<body>
+
+  <style>
+:root {
+  --bg:           #0f0f0f;
+  --bg-alt:       #0a0a0a;
+  --bg-highlight: #1a1a1a;
+  --fg:           #c5c5c6;
+  --fg-dim:       #89898a;
+  --accent:       #ECA530;   /* blue  → warm orange  */
+  --gold:         #FFC12D;   /* magenta → bright gold */
+  --yellow:       #B98E2A;
+  --green:        #BC6E32;
+  --cyan:         #7E8081;
+  --muted:        #5A5C5D;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  background-color: var(--bg);
+  color: var(--fg);
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 1rem;
+  line-height: 1.75;
+  min-height: 100vh;
+}
+
+/* ── Layout ────────────────────────────────────────────── */
+.site-wrapper {
+  max-width: 820px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+/* ── Header / Nav ──────────────────────────────────────── */
+header {
+  background-color: var(--bg-alt);
+  border-bottom: 1px solid var(--bg-highlight);
+  padding: 0.75rem 0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+header .site-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.site-title {
+  font-size: 1.15rem;
+  font-weight: bold;
+  color: var(--gold);
+  text-decoration: none;
+  letter-spacing: 0.04em;
+}
+
+.site-title:hover { color: var(--accent); }
+
+nav { display: flex; gap: 1.5rem; }
+
+nav a {
+  color: var(--fg-dim);
+  text-decoration: none;
+  font-size: 0.9rem;
+  letter-spacing: 0.03em;
+  transition: color 0.15s;
+}
+
+nav a:hover,
+nav a.active { color: var(--accent); }
+
+/* ── Main content ──────────────────────────────────────── */
+main {
+  padding: 3rem 0 4rem;
+}
+
+/* ── Hero (index only) ─────────────────────────────────── */
+.hero {
+  border-left: 3px solid var(--accent);
+  padding: 1.5rem 1.5rem 1.5rem 1.75rem;
+  margin-bottom: 3rem;
+  background-color: var(--bg-alt);
+}
+
+.hero h1 {
+  font-size: 1.8rem;
+  color: var(--gold);
+  margin-bottom: 0.5rem;
+}
+
+.hero p {
+  color: var(--fg-dim);
+  font-size: 0.95rem;
+}
+
+/* ── Section headings ──────────────────────────────────── */
+h1, h2, h3, h4 {
+  line-height: 1.3;
+}
+
+h1 { color: var(--gold);   font-size: 1.7rem; margin-bottom: 1rem; }
+h2 { color: var(--accent); font-size: 1.3rem; margin: 2rem 0 0.75rem; }
+h3 { color: var(--yellow); font-size: 1.1rem; margin: 1.5rem 0 0.5rem; }
+h4 { color: var(--green);  font-size: 1rem;   margin: 1.25rem 0 0.4rem; }
+
+p { margin-bottom: 1rem; }
+
+a { color: var(--accent); text-decoration: underline; transition: color 0.15s; }
+a:visited { color: var(--gold); }
+a:hover { color: var(--fg); }
+
+/* ── Blog list (blogs.html) ────────────────────────────── */
+.post-list { list-style: none; }
+
+.post-list li {
+  border-bottom: 1px solid var(--bg-highlight);
+  padding: 1.25rem 0;
+}
+
+.post-list li:first-child { border-top: 1px solid var(--bg-highlight); }
+
+.post-list .post-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.post-list .post-title:hover { color: var(--gold); }
+
+.post-list .post-meta {
+  font-size: 0.8rem;
+  color: var(--fg-dim);
+  margin-top: 0.2rem;
+  margin-bottom: 0.4rem;
+}
+
+.post-list .post-excerpt {
+  font-size: 0.9rem;
+  color: var(--fg);
+}
+
+/* ── Article (blog post pages) ────────────────────────── */
+article {
+  max-width: 720px;
+}
+
+.article-header {
+  margin-bottom: 2rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--bg-highlight);
+}
+
+.article-header h1 { margin-bottom: 0.35rem; }
+
+.article-meta {
+  font-size: 0.8rem;
+  color: var(--fg-dim);
+}
+
+.article-body h2:first-child { margin-top: 0; }
+
+.article-body p { color: var(--fg); }
+
+/* ── Footer ────────────────────────────────────────────── */
+footer {
+  background-color: var(--bg-alt);
+  border-top: 1px solid var(--bg-highlight);
+  padding: 1.25rem 0;
+  text-align: center;
+  font-size: 0.8rem;
+  color: var(--fg-dim);
+}
+
+footer a { color: var(--fg-dim); }
+footer a:hover { color: var(--accent); }
+
+/* ── Utility ───────────────────────────────────────────── */
+.tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  background: var(--bg-highlight);
+  color: var(--cyan);
+  border: 1px solid var(--cyan);
+  border-radius: 2px;
+  padding: 0.1em 0.45em;
+  margin-right: 0.3em;
+  vertical-align: middle;
+  letter-spacing: 0.04em;
+}
+
+.divider {
+  border: none;
+  border-top: 1px solid var(--bg-highlight);
+  margin: 2rem 0;
+}
+  </style>
+  <header>
+    <div class="site-wrapper">
+      <a class="site-title" href="../index.html">~/librepup</a>
+      <nav>
+        <a href="../index.html">home</a>
+        <a href="../blogs.html">blog</a>
+        <a href="../about.html">about</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <div class="site-wrapper">
+      <article>
+
+        <div class="article-header">
+          <h1>GNU not Linux</h1>
+          <p class="article-meta">
+            by librepup &mdash;
+            <span class="tag">gnu</span><span class="tag">linux</span><span class="tag">free software</span><span class="tag">fsf</span>
+          </p>
+          <a href="../../articles/gnunotlinux_easy.html">[simple speech]</a>
+        </div>
+
+        <div class="article-body">
+
+          <h2>Introduction</h2>
+
+          <p>
+            Factually: it&rsquo;s GNU/Linux or GNU+Linux.
+            GNU is the operating system and userland, Linux is the Kernel. We call Windows
+            &ldquo;Windows&rdquo; because that is the operating system; NT is the Windows Kernel.
+            We call macOS &ldquo;macOS&rdquo; because that&rsquo;s the operating system, not the
+            Xen/Darwin Kernel. Linux is a component in a fully functional GNU Operating System.
+            If you want to leave any part out of &ldquo;GNU+Linux&rdquo;, logically you should
+            leave out the Linux part. Because GNU is the operating system. Windows is the operating
+            system, not NT. macOS is the operating system, not Xen/Darwin. Calling GNU+Linux just
+            &ldquo;Linux&rdquo; strips the GNU Project and Stallman&rsquo;s efforts of credit,
+            falsely gives Torvalds all the credit, even though he just made the last missing piece
+            to the GNU operating system, and ignores the fact that Linux is just a Kernel, not an
+            operating system.
+          </p>
+
+          <p>
+            You do not use just Linux. A kernel allocates resources to applications and manages
+            most of the hardware interactions and other stuff to be managed. What you actually
+            interact with is the operating system: the GNU operating system. If you do not use GNU
+            and maybe something like busybox, then you&rsquo;d be using busybox+Linux, or just
+            busybox.
+          </p>
+
+          <p>
+            The fact that Linux was not initially developed for the GNU system does not mean it is
+            the biggest, most important, most credible, or most notable part of the GNU operating
+            system. You say Windows too, don&rsquo;t you? Not &ldquo;NT&rdquo;. Because you name
+            what you interact with. You rarely interact directly with the Kernel. The kernel is
+            just a component of the GNU operating system.
+          </p>
+
+          <p>
+            You can&rsquo;t randomly give Linux more credit and leave out all of Stallman&rsquo;s
+            and the GNU Project&rsquo;s work just for convenience sake.
+          </p>
+
+          <hr class="divider" />
+
+          <h2>Breakdown</h2>
+
+          <h3>Factual Side</h3>
+          <p>
+            Linux is one component of a complete GNU operating system. Reducing the entire
+            operating system to its Kernel is the same as calling &ldquo;Windows&rdquo; NT &mdash;
+            it&rsquo;s not true. NT is a part of a Windows OS; Linux is a part of a GNU OS.
+          </p>
+
+          <h3>Accuracy</h3>
+          <p>
+            As stated before, Linux, the Kernel, is part of the GNU operating system. Linux itself
+            without the GNU (or any other top-level) operating system is mostly unusable.
+          </p>
+
+          <h3>Ethics</h3>
+          <p>
+            By reducing GNU+Linux to &ldquo;Linux&rdquo; you strip all the credit away from the
+            GNU Project and Richard Stallman who developed the GNU Project way before Linux was
+            even an idea. GNU is the largest part of a fully functioning GNU+Linux system. If you
+            want to leave out any part for convenience sake, you should leave out the
+            &ldquo;Linux&rdquo; part, just like you do with Windows or macOS. Do you call Windows
+            &ldquo;NT&rdquo;? No. Do you call macOS &ldquo;Xen/Darwin&rdquo;? No. Calling
+            GNU+Linux (or just GNU) simply &ldquo;Linux&rdquo; is disrespectful, inaccurate,
+            strips Stallman of all credit, and ignores the biggest part that makes GNU+Linux
+            functional. Which is the GNU operating system.
+          </p>
+
+          <h3>Conclusion</h3>
+          <p>
+            Want a short and easy to pronounce name? &ldquo;GNU&rdquo; would be factually more
+            correct than &ldquo;Linux&rdquo;. GNU defines the OS goals, GNU predates the Kernel,
+            GNU supplies the system identity, the Kernel is an implementation detail, GNU provides
+            the shells, userland, init-system (originally at least), coreutils, and basically
+            everything you interact with, rely on, use on a daily basis, and call &ldquo;the
+            Operating System&rdquo;.
+          </p>
+
+        </div>
+
+        <a href="../../articles/GNUnotLinux.org">[download]</a>
+
+        <hr class="divider" />
+        <p style="font-size:0.85rem; color: var(--fg-dim);">
+          &larr; <a href="../../blogs.html">back to all posts</a>
+        </p>
+
+      </article>
+    </div>
+  </main>
+
+  <footer>
+    <div class="site-wrapper">
+      <p>&copy; librepup &mdash; built with free software &amp; plain HTML</p>
+    </div>
+  </footer>
+
+</body>
+</html>
